@@ -30,11 +30,16 @@ public class BeachFragment extends Fragment {
         ImageView characterImage = view.findViewById(R.id.characterAnimation);
         AnimationDrawable animationCharacter = (AnimationDrawable) characterImage.getDrawable();
 
+        //드래곤 ImageView 찾기
+        ImageView dragonImage = view.findViewById(R.id.dragonAnimation);
+        AnimationDrawable animationDragon = (AnimationDrawable) dragonImage.getDrawable();
+
         //ObjectAnimator 설정
         if (backgroundImage != null) {
             // 이미지의 전체 너비 계산 (혹은 고정 크기)
             animationDrawable.start();
             animationCharacter.start();
+            animationDragon.start();
         } else {
             // backgroundImage가 null일 경우 디버깅용 로그 추가
             Log.e("BeachFragment", "backgroundImage is null");
