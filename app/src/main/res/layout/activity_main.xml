@@ -5,24 +5,69 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:fitsSystemWindows="true">
 
-    <fragment
+
+<fragment
         android:id="@+id/backgroundFragment"
         android:name="com.example.walkingdragon.ForestFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/stepCounterBox"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/stepCounterCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:padding="16dp"
         android:layout_marginTop="32dp"
-        android:text="0 steps"
-        android:textSize="32sp"
-        android:textColor="#FFFFFF"
-        />
+        android:padding="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        android:backgroundTint="#AA333333">
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- 걸음 수 텍스트 -->
+            <TextView
+                android:id="@+id/stepCounterBox"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="0 steps"
+                android:textSize="40sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/scdream6"
+                android:gravity="center" />
+
+            <!-- 부가 설명 텍스트 -->
+            <TextView
+                android:id="@+id/stepCounterDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="걸음 수"
+                android:textSize="16sp"
+                android:textColor="#CCCCCC"
+                android:fontFamily="@font/scdream6"
+                android:gravity="center"
+                android:paddingTop="4dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:background="@drawable/circle_background"
+        android:src="@drawable/baseline_flight_24"
+        android:contentDescription="뒤로가기"
+        android:scaleType="center"
+        android:padding="12dp"
+        android:elevation="8dp" />
 </FrameLayout>
