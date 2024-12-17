@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -107,6 +108,16 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.backgroundFragment, selectedFragment)
                 .commit();
 
+        // 버튼 객체 가져오기
+        ImageButton backButton = findViewById(R.id.backButton);
+
+        // 버튼 클릭 리스너 추가
+        backButton.setOnClickListener(v -> {
+            // FlyActivity로 전환
+            Intent intent = new Intent(MainActivity.this, FlyActivity.class);
+            startActivity(intent); // 화면 전환 실행
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out); // 페이드 애니메이션
+        });
     }
     private void scheduleMidnightResetWithWorkManager() {
         Calendar midnight = Calendar.getInstance();
