@@ -5,16 +5,37 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.Manifest;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.maps.model.LatLng;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.List;
+
+//import retrofit2.Call;
+//import retrofit2.Callback;
+//import retrofit2.Response;
+//import retrofit2.Retrofit;
+//import retrofit2.converter.gson.GsonConverterFactory;
+
 public class FlyActivity extends AppCompatActivity {
 
+    // 상수 정의
+
+    String latitude = "0";
+    String longitude = "0";
     private LocationManager locationManager;
     private LocationListener locationListener;
     @Override
@@ -36,8 +57,86 @@ public class FlyActivity extends AppCompatActivity {
 
         // GPS 정보 가져오기
         requestLocation();
+
+        // TextView 참조
+        TextView titleTextView = findViewById(R.id.titleTextView1);
+
+        // 비동기 처리 스레드
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                NaverAPI naverAPI = new NaverAPI();
+                String result = naverAPI.searchLocal("병원");
+                Log.d("NaverAPIResult", result);
+
+                // JSON 파싱
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    JSONArray items = jsonObject.getJSONArray("items");
+                    if (items.length() > 0) {
+                        JSONObject firstItem = items.getJSONObject(0);
+                        String title = firstItem.getString("title"); // "옥토한의원" 등
+
+                        // UI 업데이트는 메인스레드에서
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // titleTextView에 title 반영
+                                titleTextView.setText(title);
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
+//
+//    // 키워드 검색 함수
+//    private void searchKeyword(String keyword, String x, String y) {
+//        // Retrofit 객체 생성
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(BASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//
+//        // Retrofit 인터페이스 객체 생성
+//        KakaoAPI api = retrofit.create(KakaoAPI.class);
+//        int radius = 2000;
+//
+//        //category 설정
+//        String category = "학교";
+//        if(keyword.equals("학교"))
+//            category = "SC4";
+//        else if(keyword.equals("병원"))
+//            category = "HP8";
+//        // API 호출
+//        Call<ResultSearchKeword> call = api.getSearchKeyword(API_KEY, keyword);
+//
+//        // 비동기 요청 처리
+//        call.enqueue(new Callback<ResultSearchKeword>() {
+//            @Override
+//            public void onResponse(Call<ResultSearchKeword> call, Response<ResultSearchKeword> response) {
+//                if (response.isSuccessful() && response.body() != null) {
+//                    // 통신 성공, 결과 처리
+//                    Log.d("FlyActivity", "Raw: " + response.raw());
+//                    Log.d("FlyActivity", "Body: " + response.body());
+//                } else {
+//                    // 통신 성공했지만 응답에 문제가 있는 경우
+//                    Log.d("FlyActivity", "Raw Response: " + response.raw().toString());
+//                    Log.w("FlyActivity", "응답 실패: " + response.errorBody());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResultSearchKeword> call, Throwable t) {
+//                // 통신 실패
+//                Log.w("FlyActivity", "통신 실패: " + t.getMessage());
+//            }
+//        });
+//    }
 
     private void requestLocation() {
         // 권한 확인
@@ -81,8 +180,8 @@ public class FlyActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
     private void handleLocationUpdate(Location location) {
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
+        latitude = String.valueOf(location.getLatitude());
+        longitude = String.valueOf(location.getLongitude());
         Toast.makeText(this, "위도: " + latitude + ", 경도: " + longitude, Toast.LENGTH_LONG).show();
     }
     private void stopGPS() {

@@ -35,7 +35,10 @@ dependencies {
     val work_version = "2.9.1"
     // (Java only)
     implementation("androidx.work:work-runtime:$work_version")
-
+    // Retrofit 라이브러리
+    implementation("com.google.maps:google-maps-services:0.18.0")
+    implementation("org.slf4j:slf4j-simple:1.7.25")
+    implementation("org.locationtech.proj4j:proj4j:1.2.2")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

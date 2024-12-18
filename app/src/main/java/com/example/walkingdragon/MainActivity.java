@@ -24,7 +24,6 @@ import androidx.work.WorkManager;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
 public class MainActivity extends AppCompatActivity {
 
     private TextView stepCounterBox;
