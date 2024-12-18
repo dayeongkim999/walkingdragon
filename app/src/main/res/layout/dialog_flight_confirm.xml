@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_background"
+    android:padding="16dp">
+
+    <!-- 제목 -->
+    <TextView
+        android:id="@+id/flightTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="비행 확인"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingBottom="12dp"
+        android:textColor="@color/white" />
+
+    <!-- 설명 -->
+    <TextView
+        android:id="@+id/flightMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="비행을 보내시겠습니까?"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:paddingBottom="16dp" />
+
+    <!-- 버튼 컨테이너 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- 확인 버튼 -->
+        <Button
+            android:id="@+id/confirmButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="확인"
+            android:background="@drawable/button_background"
+            android:textColor="@color/white"
+            android:paddingHorizontal="20dp" />
+
+        <!-- 취소 버튼 -->
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="취소"
+            android:background="@drawable/button_background"
+            android:textColor="@color/white"
+            android:paddingHorizontal="20dp"
+            android:layout_marginStart="16dp" />
+    </LinearLayout>
+</LinearLayout>

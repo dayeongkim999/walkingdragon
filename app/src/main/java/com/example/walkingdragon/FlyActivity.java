@@ -1,18 +1,34 @@
 package com.example.walkingdragon;
 
+import static com.example.walkingdragon.CoordinateUtils.calculateDistance;
+import static com.example.walkingdragon.CoordinateUtils.calculateTm128Distance;
+import static com.example.walkingdragon.CoordinateUtils.tm128ToWgs84;
+
+import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.Manifest;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
 import com.google.maps.model.LatLng;
@@ -34,8 +50,8 @@ public class FlyActivity extends AppCompatActivity {
 
     // 상수 정의
 
-    String latitude = "0";
-    String longitude = "0";
+    private double gpsLatitude = 0.0;
+    private double gpsLongitude = 0.0;
     private LocationManager locationManager;
     private LocationListener locationListener;
     @Override
@@ -58,42 +74,79 @@ public class FlyActivity extends AppCompatActivity {
         // GPS 정보 가져오기
         requestLocation();
 
-        // TextView 참조
-        TextView titleTextView = findViewById(R.id.titleTextView1);
+      // 비동기 처리 스레드
+        new Thread(() -> {
+            NaverAPI naverAPI = new NaverAPI();
+            String result = naverAPI.searchLocal("병원");
+            Log.d("NaverAPIResult", result);
 
-        // 비동기 처리 스레드
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                NaverAPI naverAPI = new NaverAPI();
-                String result = naverAPI.searchLocal("병원");
-                Log.d("NaverAPIResult", result);
+            // JSON 파싱
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray items = jsonObject.getJSONArray("items");
 
-                // JSON 파싱
-                try {
-                    JSONObject jsonObject = new JSONObject(result);
-                    JSONArray items = jsonObject.getJSONArray("items");
-                    if (items.length() > 0) {
-                        JSONObject firstItem = items.getJSONObject(0);
-                        String title = firstItem.getString("title"); // "옥토한의원" 등
+                // 최대 3번 반복 (0, 1, 2)
+                int itemCount = Math.min(items.length(), 3); // 최대 3개만 처리
+                for (int i = 0; i < itemCount; i++) {
+                    JSONObject item = items.getJSONObject(i);
+                    String title = item.getString("title"); // 장소 이름
+                    double mapX = Double.parseDouble(item.getString("mapx"));
+                    double mapY = Double.parseDouble(item.getString("mapy"));
 
-                        // UI 업데이트는 메인스레드에서
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // titleTextView에 title 반영
-                                titleTextView.setText(title);
-                            }
+                    // 좌표 변환
+                    double[] Coords = CoordinateUtils.processCoordinates((long) mapX, (long) mapY);
+
+                    // 거리 계산
+                    double distance = calculateDistance(Coords[0], Coords[1], gpsLongitude, gpsLatitude);
+                    Log.d("GPSLocation", String.format("Item %d: GPS Coordinates: Latitude=%.6f, Longitude=%.6f, mapX=%.6f, mapY=%.6f", i, gpsLatitude, gpsLongitude, Coords[0], Coords[1]));
+
+                    // 예상 시간 계산
+                    double timeInHours = distance / 10.0;
+                    int hours = (int) timeInHours;
+                    int minutes = (int) ((timeInHours - hours) * 60);
+
+                    // UI 업데이트는 메인스레드에서
+                    int finalI = i;
+                    runOnUiThread(() -> {
+                        // 동적으로 TextView 참조
+                        TextView titleTextView = findViewById(getResources().getIdentifier("titleTextView" + (finalI + 1), "id", getPackageName()));
+                        TextView distanceTextView = findViewById(getResources().getIdentifier("distanceTextView" + (finalI + 1), "id", getPackageName()));
+                        TextView timeTextView = findViewById(getResources().getIdentifier("timeTextView" + (finalI + 1), "id", getPackageName()));
+
+                        // TextView 업데이트
+                        titleTextView.setText(title);
+                        distanceTextView.setText(String.format("거리: %.2f km", distance));
+                        timeTextView.setText(String.format("예상 시간: %d시간 %d분", hours, minutes));
+
+                        // 동적으로 CardView 참조
+                        CardView cardView = findViewById(getResources().getIdentifier("cardView" + (finalI + 1), "id", getPackageName()));
+
+                        // 클릭 이벤트 추가
+                        cardView.setOnClickListener(v -> {
+                            showFlightConfirmDialog(title, hours, minutes, () -> {
+                                // 예상 시간을 ms로 계산하여 MainActivity로 전달
+                                long durationInMillis = (hours * 60 + minutes) * 60 * 1000;
+                                sendFlightToMainActivity(durationInMillis);
+                            });
                         });
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    });
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }).start();
     }
 
 //
+    /**
+     * 비행 실행: 정해진 시간 동안 드래곤 숨기기
+     */
+    private void sendFlightToMainActivity(long duration) {
+        Intent intent = new Intent(FlyActivity.this, MainActivity.class);
+        intent.putExtra("FLIGHT_DURATION", duration); // 비행 시간(ms) 전달
+        startActivity(intent); // MainActivity로 이동
+        finish(); // FlyActivity 종료
+    }
 //    // 키워드 검색 함수
 //    private void searchKeyword(String keyword, String x, String y) {
 //        // Retrofit 객체 생성
@@ -180,9 +233,9 @@ public class FlyActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
     private void handleLocationUpdate(Location location) {
-        latitude = String.valueOf(location.getLatitude());
-        longitude = String.valueOf(location.getLongitude());
-        Toast.makeText(this, "위도: " + latitude + ", 경도: " + longitude, Toast.LENGTH_LONG).show();
+        gpsLatitude = location.getLatitude();
+        gpsLongitude = location.getLongitude();
+        Toast.makeText(this, "GPS 위치: 위도=" + gpsLatitude + ", 경도=" + gpsLongitude, Toast.LENGTH_SHORT).show();
     }
     private void stopGPS() {
         if (locationManager != null && locationListener != null) {
@@ -207,4 +260,38 @@ public class FlyActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void showFlightConfirmDialog(String title, int hours, int minutes, Runnable onConfirm) {
+        // Custom Dialog 초기화
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_flight_confirm);
+
+        // Dialog 창 크기 설정
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        // Dialog UI 요소 참조
+        TextView flightTitle = dialog.findViewById(R.id.flightTitle);
+        TextView flightMessage = dialog.findViewById(R.id.flightMessage);
+        Button confirmButton = dialog.findViewById(R.id.confirmButton);
+        Button cancelButton = dialog.findViewById(R.id.cancelButton);
+
+        // 데이터 설정
+        flightTitle.setText(title);
+        flightMessage.setText(String.format("비행을 보내시겠습니까?\n예상 시간: %d시간 %d분", hours, minutes));
+
+        // 확인 버튼 클릭 이벤트
+        confirmButton.setOnClickListener(v -> {
+            dialog.dismiss(); // Dialog 닫기
+            onConfirm.run(); // 비행 실행
+        });
+
+        // 취소 버튼 클릭 이벤트
+        cancelButton.setOnClickListener(v -> dialog.dismiss()); // Dialog 닫기
+
+        // Dialog 표시
+        dialog.show();
+    }
+
 }
+

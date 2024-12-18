@@ -24,6 +24,7 @@
 
         <!-- 카드 형태의 아이템 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardView1"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -62,8 +63,16 @@
                         android:textColor="#333333"
                         android:fontFamily="@font/scdream6"
                         android:paddingBottom="4dp" />
-
                     <TextView
+                        android:id="@+id/distanceTextView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="거리: 0km"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:fontFamily="@font/scdream6" />
+                    <TextView
+                        android:id="@+id/timeTextView1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="예상 시간: 0분"
@@ -76,6 +85,7 @@
 
         <!-- 두 번째 카드 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardView2"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -103,15 +113,24 @@
                     android:layout_marginStart="16dp">
 
                     <TextView
+                        android:id="@+id/titleTextView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="대학"
+                        android:text="병원"
                         android:textSize="20sp"
                         android:textColor="#333333"
                         android:fontFamily="@font/scdream6"
                         android:paddingBottom="4dp" />
-
                     <TextView
+                        android:id="@+id/distanceTextView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="거리: 0km"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:fontFamily="@font/scdream6" />
+                    <TextView
+                        android:id="@+id/timeTextView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="예상 시간: 0분"
@@ -124,6 +143,7 @@
 
         <!-- 세 번째 카드 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardView3"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
@@ -150,15 +170,24 @@
                     android:layout_marginStart="16dp">
 
                     <TextView
+                        android:id="@+id/titleTextView3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="기타 장소"
+                        android:text="병원"
                         android:textSize="20sp"
                         android:textColor="#333333"
                         android:fontFamily="@font/scdream6"
                         android:paddingBottom="4dp" />
-
                     <TextView
+                        android:id="@+id/distanceTextView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="거리: 0km"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:fontFamily="@font/scdream6" />
+                    <TextView
+                        android:id="@+id/timeTextView3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="예상 시간: 0분"
