@@ -4,5 +4,7 @@
     <color name="dark_blue">#2B3A67</color>
     <color name="primary">#FFA500</color>
     <color name="white">#FFFFFF</color>
+    <color name="dark_gray">#333333</color>
+    <color name="light_gray">#CCCCCC</color>
 
 </resources>

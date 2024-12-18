@@ -143,6 +143,8 @@ public class FlyActivity extends AppCompatActivity {
      */
     private void sendFlightToMainActivity(long duration) {
         Intent intent = new Intent(FlyActivity.this, MainActivity.class);
+        // 비행 시간(ms) 로그 출력
+        Log.d("FlightDuration", "Duration (ms): " + duration);
         intent.putExtra("FLIGHT_DURATION", duration); // 비행 시간(ms) 전달
         startActivity(intent); // MainActivity로 이동
         finish(); // FlyActivity 종료
